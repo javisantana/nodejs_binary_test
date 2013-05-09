@@ -1,0 +1,49 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <canvas id="c"></canvas>
+    <script>
+
+      function get(url, callback) {
+        var req = new XMLHttpRequest();
+        req.responseType = 'arraybuffer';
+        req.onreadystatechange = function() {
+          if (req.readyState == 4){
+            if (req.status == 200){
+              callback(req);
+            } else {
+              callback(null);
+            }
+          }
+        };
+        req.open("GET", url, true)
+        req.send(null)
+        return req;
+      }
+
+
+      var canvas = document.getElementById('c');
+      var ctx = canvas.getContext('2d');
+
+      function render(vertices) {
+        var len = vertices.length/2 ;
+        ctx.beginPath();
+        for(var i = 0; i < len; ++i) {
+          var idx = 2*i
+          var x = vertices[idx + 0];
+          var y = vertices[idx + 1];
+          i == 0 ? ctx.moveTo(x, y): ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.stroke();
+      }
+
+      get('/test', function(req) {
+        render(new Uint8Array(req.response));
+      });
+
+    </script>
+  </body>
+
+</html>
